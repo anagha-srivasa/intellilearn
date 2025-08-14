@@ -58,3 +58,9 @@ IntelliLearn is an end-to-end learning management platform powered by Gemini LLM
 - **Seamless teacher-parent-student communication**
 
 IntelliLearn redefines personalized education with AI. For more details, see the code and explore each dashboard!
+
+
+
+V2 highlights:
+
+RAG for better content generation and analysis
