@@ -1,0 +1,13 @@
+{
+  "usn": "S1001",
+  "name": "Alice Kumar",
+  "enrolled_courses": ["Math", "Science"],
+  "learning_rate": 75,
+  "marks": {"Math": 88, "Science": 92},
+  "attendance": {"Math": 98, "Science": 95, "total": 96},
+  "doubts": {"Math": ["What is calculus?"], "Science": ["Explain photosynthesis."]},
+  "strong_subjects": ["Science"],
+  "weak_subjects": ["Math"],
+  "overall_analysis": {"focus": "Good", "improvement": "Math"},
+  "course_contents": {"Math": ["Algebra.pdf", "Calculus.mp4"], "Science": ["Biology.pdf", "Physics.mp4"]}
+}

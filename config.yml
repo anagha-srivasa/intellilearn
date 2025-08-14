@@ -1,0 +1,23 @@
+# config.yml
+# Store secrets and configuration values for IntelliLearn
+
+llm:
+  gemini_api_key: "YOUR_GEMINI_API_KEY_HERE"
+  model: "gemini-pro"
+
+app:
+  debug: true
+  allowed_hosts:
+    - "localhost"
+    - "127.0.0.1"
+
+student:
+  default_learning_rate: 50
+  leaderboard_size: 10
+
+teacher:
+  attendance_threshold: 80
+  anomaly_threshold: 50
+
+parent:
+  report_limit: 5

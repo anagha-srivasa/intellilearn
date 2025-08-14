@@ -1,0 +1,21 @@
+{
+  "teacher_id": "T2001",
+  "name": "Dr. Ramesh Singh",
+  "courses": ["Math", "Science"],
+  "students": {
+    "Math": ["S1001"],
+    "Science": ["S1001"]
+  },
+  "attendance_reports": {
+    "Math": {"S1001": 98},
+    "Science": {"S1001": 95}
+  },
+  "performance": {
+    "Math": {"S1001": 88},
+    "Science": {"S1001": 92}
+  },
+  "topics_to_stress": {"Math": ["Calculus"], "Science": ["Physics"]},
+  "approved_contents": {"Math": ["Algebra.pdf", "Calculus.mp4"], "Science": ["Biology.pdf", "Physics.mp4"]},
+  "personal_assignments": {"Math": ["Assignment1.pdf"], "Science": ["Project1.pdf"]},
+  "evaluation_mode": {"Math": "manual", "Science": "ilm"}
+}
