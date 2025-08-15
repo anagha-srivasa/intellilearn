@@ -17,6 +17,7 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')
 DB_PATH = os.path.join(PROJECT_ROOT, 'db', 'teachers')
 ILM_HISTORY_PATH = os.path.join(PROJECT_ROOT, 'db', 'ilm_history')
 CONFIG_PATH = os.path.join(PROJECT_ROOT, 'config.yml')
+RAG_TEXTBOOK_DIR = os.path.join(os.path.dirname(__file__), '../../db/rag_textbooks')
 
 with open(CONFIG_PATH, 'r') as f:
     config = yaml.safe_load(f)
@@ -24,6 +25,7 @@ GEMINI_API_KEY = config['llm']['gemini_api_key']
 
 os.makedirs(DB_PATH, exist_ok=True)
 os.makedirs(ILM_HISTORY_PATH, exist_ok=True)
+os.makedirs(RAG_TEXTBOOK_DIR, exist_ok=True)
 
 # --- Teacher Data Access ---
 def get_teacher(teacher_id: str) -> Optional[Dict[str, Any]]:
@@ -312,3 +314,16 @@ def communicate_with_student_llm(teacher_id: str, course: str, student_usn: str,
     student_summary = prompt_ilm_chat_summary([message])
     prompt = prompt_teacher_communication(message, student_summary)
     return llm.generate_response(prompt, "")
+
+# --- Subject-Textbook Mapping for RAG ---
+def save_subject_textbook(subject: str, text: str):
+    path = os.path.join(RAG_TEXTBOOK_DIR, f"{subject}.txt")
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(text)
+
+def get_subject_textbook(subject: str) -> str:
+    path = os.path.join(RAG_TEXTBOOK_DIR, f"{subject}.txt")
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
+            return f.read()
+    return ""

@@ -3,4 +3,6 @@ uvicorn
 streamlit
 pyyaml
 pydantic
-requests
+langchain-google-genai
+langchain
+PyPDF2

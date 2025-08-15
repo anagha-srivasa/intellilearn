@@ -1,4 +1,6 @@
 import streamlit as st
+from PyPDF2 import PdfReader
+import os
 from app.repo.teacher_repo import (
     get_teacher,
     get_attendance_reports,
@@ -19,9 +21,12 @@ from app.repo.teacher_repo import (
     get_course_performance_summary,
     get_student_improvement_suggestions,
     get_teacher_activity_log,
-    get_course_engagement_stats
+    get_course_engagement_stats,
+    save_subject_textbook
 )
-from resources.prompts import ILM_PROMPT
+
+# Mapping: subject -> textbook text
+subject_textbook_map = {}
 
 st.title("Teacher Dashboard - IntelliLearn")
 
@@ -30,6 +35,17 @@ if teacher_id:
     teacher = get_teacher(teacher_id)
     if teacher:
         st.header(f"Welcome, {teacher.get('name', teacher_id)}")
+        st.subheader("Upload Textbook PDF for RAG")
+        rag_subject = st.selectbox("Select Subject for Textbook Upload", get_courses(teacher_id))
+        uploaded_pdf = st.file_uploader("Upload Textbook PDF", type=["pdf"])
+        if uploaded_pdf and rag_subject:
+            pdf_reader = PdfReader(uploaded_pdf)
+            textbook_text = "\n".join(page.extract_text() or "" for page in pdf_reader.pages)
+            subject_textbook_map[rag_subject] = textbook_text
+            save_subject_textbook(rag_subject, textbook_text)
+            st.success(f"Textbook uploaded and mapped to subject: {rag_subject}")
+            st.write(textbook_text[:1000] + "..." if len(textbook_text) > 1000 else textbook_text)
+
         st.subheader("Attendance Reports & AI Insights")
         att_reports = get_attendance_reports(teacher_id)
         st.write(att_reports)
@@ -93,7 +109,23 @@ if teacher_id:
 
         st.subheader("Gemini ILM Integration (Demo)")
         st.write("Prompt sent to Gemini:")
-        st.code(ILM_PROMPT)
+        rag_text = subject_textbook_map.get(course, "")
+        st.write(f"RAG Context for {course}: {rag_text[:500]}..." if rag_text else "No textbook uploaded for this subject.")
         st.write("Gemini API response will appear here (placeholder)")
+
+        st.subheader("Gemini ILM Interactive Tasks with RAG")
+        llm_task = st.selectbox("Select LLM Task", ["Doubt Solving", "Assignment Generation", "Evaluation", "Content Generation"])
+        llm_input = st.text_area("Enter your query or prompt for Gemini")
+        rag_text = subject_textbook_map.get(course, "")
+        if st.button("Run Gemini LLM with RAG Context"):
+            if not rag_text:
+                st.error("No textbook uploaded for this subject. Please upload a PDF first.")
+            else:
+                # Example: Combine prompt and RAG context for LLM
+                from llm.llm_client import run_gemini_llm
+                full_context = f"RAG textbook context:\n{rag_text[:2000]}"  # Limit context size for demo
+                response = run_gemini_llm(llm_input, full_context)
+                st.write("Gemini LLM Response:")
+                st.success(response)
     else:
         st.error("Teacher not found.")

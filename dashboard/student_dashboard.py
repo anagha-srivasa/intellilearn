@@ -10,7 +10,7 @@ from app.repo.student_repo import (
     get_subject_difficulty_insights,
     generate_content_with_llm
 )
-from resources.prompts import ILM_PROMPT
+from app.repo.teacher_repo import get_subject_textbook
 
 st.title("Student Dashboard - IntelliLearn")
 
@@ -49,14 +49,20 @@ if usn:
 
         st.subheader("Gemini ILM Integration (Demo)")
         st.write("Prompt sent to Gemini:")
-        st.code(ILM_PROMPT)
         st.write("Gemini API response will appear here (placeholder)")
 
-        st.subheader("Gemini ILM Interactive Content/Assessment")
+        st.subheader("Gemini ILM Interactive Content/Assessment with RAG")
         llm_input = st.text_area("Ask for content, assessment, or help (Gemini)")
-        if st.button("Get LLM Response"):
-            llm_response = generate_content_with_llm(usn, subject, llm_input)
-            st.write("Gemini LLM Response:")
-            st.success(llm_response)
+        subject_for_rag = st.selectbox("Select Subject for RAG", list(course_contents.keys()))
+        rag_text = get_subject_textbook(subject_for_rag)
+        if st.button("Get LLM Response with RAG"):
+            if not rag_text:
+                st.error("No textbook uploaded for this subject by teacher.")
+            else:
+                from llm.llm_client import run_gemini_llm
+                full_context = f"RAG textbook context:\n{rag_text[:2000]}"  # Limit context size for demo
+                llm_response = run_gemini_llm(llm_input, full_context)
+                st.write("Gemini LLM Response:")
+                st.success(llm_response)
     else:
         st.error("Student not found.")
